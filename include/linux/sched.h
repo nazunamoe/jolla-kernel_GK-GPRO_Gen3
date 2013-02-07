@@ -1218,6 +1218,7 @@ struct sched_entity {
 	/* rq "owned" by this entity/group: */
 	struct cfs_rq		*my_q;
 #endif
+
 /*
  * Load-tracking only depends on SMP, FAIR_GROUP_SCHED dependency below may be
  * removed when useful for applications beyond shares distribution (e.g.
@@ -1245,6 +1246,7 @@ struct sched_rt_entity {
 	struct rt_rq		*my_q;
 #endif
 };
+
 
 struct rcu_node;
 
@@ -1628,6 +1630,7 @@ struct task_struct {
 /* Future-safe accessor for struct task_struct's cpus_allowed. */
 #define tsk_cpus_allowed(tsk) (&(tsk)->cpus_allowed)
 
+<<<<<<< HEAD
 /*
  * Priority of a process goes from 0..MAX_PRIO-1, valid RT
  * priority is 0..MAX_RT_PRIO-1, and SCHED_NORMAL/SCHED_BATCH
@@ -2094,26 +2097,6 @@ static inline void sched_autogroup_create_attach(struct task_struct *p) { }
 static inline void sched_autogroup_detach(struct task_struct *p) { }
 static inline void sched_autogroup_fork(struct signal_struct *sig) { }
 static inline void sched_autogroup_exit(struct signal_struct *sig) { }
-#endif
-
-#ifdef CONFIG_RT_MUTEXES
-extern int rt_mutex_getprio(struct task_struct *p);
-extern void rt_mutex_setprio(struct task_struct *p, int prio);
-extern void rt_mutex_adjust_pi(struct task_struct *p);
-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
-{
-	return tsk->pi_blocked_on != NULL;
-}
-#else
-static inline int rt_mutex_getprio(struct task_struct *p)
-{
-	return p->normal_prio;
-}
-# define rt_mutex_adjust_pi(p)		do { } while (0)
-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
-{
-	return false;
-}
 #endif
 
 extern bool yield_to(struct task_struct *p, bool preempt);
@@ -2738,8 +2721,6 @@ struct migration_notify_data {
 
 extern long sched_setaffinity(pid_t pid, const struct cpumask *new_mask);
 extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
-
-extern void normalize_rt_tasks(void);
 
 #ifdef CONFIG_CGROUP_SCHED
 
