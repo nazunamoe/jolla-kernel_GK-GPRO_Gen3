@@ -31,6 +31,12 @@
 #include <linux/perf_event.h>
 #include <linux/audit.h>
 #include <linux/khugepaged.h>
+<<<<<<< HEAD
+=======
+#include <linux/uprobes.h>
+#include <linux/rbtree_augmented.h>
+#include <linux/sched/sysctl.h>
+>>>>>>> cf4aebc2... sched: Move sched.h sysctl bits into separate header
 
 #include <asm/uaccess.h>
 #include <asm/cacheflush.h>
