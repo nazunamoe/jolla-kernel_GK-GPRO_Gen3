@@ -350,8 +350,11 @@ unsigned char *gCfgParamName[] = {
     (unsigned char *)"ENABLE_MCC_ADAPTIVE_SCHED",
     (unsigned char *)"DISABLE_LDPC_WITH_TXBF_AP",
     (unsigned char *)"AP_LINK_MONITOR_TIMEOUT",
+<<<<<<< HEAD
     (unsigned char *)"RA_FILTER_ENABLE",
     (unsigned char *)"RA_RATE_LIMIT_INTERVAL",
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 };
 
 

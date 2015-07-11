@@ -1122,7 +1122,7 @@ static int VosRXThread ( void * Arg )
         /* Rx Thread Suspended */
         complete(&pHddCtx->rx_sus_event_var);
 
-        INIT_COMPLETION(pSchedContext->ResumeRxEvent);
+        init_completion(&pSchedContext->ResumeRxEvent);
         spin_unlock(&pSchedContext->RxThreadLock);
 
         /* Wait for Resume Indication */

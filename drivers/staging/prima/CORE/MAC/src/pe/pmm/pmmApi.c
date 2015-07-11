@@ -815,6 +815,12 @@ tSirRetStatus pmmSendPowerSaveCfg(tpAniSirGlobal pMac, tpSirPowerSaveCfg pUpdate
         pmmLog(pMac, LOGP, FL("pmmCfg: cfgGet failed for ignoreDtim"));
     pUpdatedPwrSaveCfg->ignoreDtim = (tANI_U8) ignoreDtim;
 
+    /* The numBeaconPerRssiAverage should be <= rssiFilter Period,
+     * and less than the max allowed (default set to 20 in CFG)
+     */
+    if (numBeaconPerRssiAverage > rssiFilterPeriod)
+        pUpdatedPwrSaveCfg->numBeaconPerRssiAverage = (tANI_U8)GET_MIN_VALUE(rssiFilterPeriod, WNI_CFG_NUM_BEACON_PER_RSSI_AVERAGE_STAMAX);
+
     //Save a copy of the CFG in global pmm context.
     palCopyMemory( pMac->hHdd, (tANI_U8 *) &pMac->pmm.gPmmCfg,  pUpdatedPwrSaveCfg, sizeof(tSirPowerSaveCfg));
 
@@ -2151,23 +2157,30 @@ void pmmEnterWowlRequestHandler(tpAniSirGlobal pMac, tpSirMsgQ pMsg)
 #endif //FEATURE_WLAN_DIAG_SUPPORT
 
     pSmeWowlParams = (tpSirSmeWowlEnterParams)(pMbMsg->data);
+<<<<<<< HEAD
     if (NULL == pSmeWowlParams)
     {
         limLog(pMac, LOGE,
                FL("NULL message received"));
         return;
     }
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
-    pSessionEntry = peFindSessionByBssid(pMac, pSmeWowlParams->bssId,
-                                         &peSessionId);
-    if (NULL == pSessionEntry)
+    if((pSessionEntry = peFindSessionByBssid(pMac,pSmeWowlParams->bssId,&peSessionId))== NULL)
     {
+<<<<<<< HEAD
         limLog(pMac, LOGE,
+=======
+         limLog(pMac, LOGE,
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
                FL("session does not exist for given BSSId"));
         goto end;
     }
     pMac->pmm.sessionId = peSessionId;
 
+    if (NULL == pSmeWowlParams)
+        return;
 // Need to fix it ASAP - TBH
 #if 0
     if (pMac->lim.gLimSmeState != eLIM_SME_LINK_EST_STATE)

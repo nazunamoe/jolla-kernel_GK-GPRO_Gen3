@@ -256,7 +256,10 @@ typedef struct
 #define QCSAP_IOCTL_SET_TX_POWER        (SIOCIWFIRSTPRIV+20) 
 #define QCSAP_IOCTL_GET_STA_INFO        (SIOCIWFIRSTPRIV+21)
 #define QCSAP_IOCTL_SET_MAX_TX_POWER    (SIOCIWFIRSTPRIV+22)
+<<<<<<< HEAD
 #define QCSAP_IOCTL_DATAPATH_SNAP_SHOT        (SIOCIWFIRSTPRIV+23)
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
 #define MAX_VAR_ARGS         7
 #define QCSAP_IOCTL_PRIV_GET_SOFTAP_LINK_SPEED (SIOCIWFIRSTPRIV + 31)

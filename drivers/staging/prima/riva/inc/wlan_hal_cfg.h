@@ -155,9 +155,13 @@
 #define QWLAN_HAL_CFG_ENABLE_DETECT_PS_SUPPORT          101
 #define QWLAN_HAL_CFG_AP_LINK_MONITOR_TIMEOUT           102
 #define QWLAN_HAL_CFG_BTC_DWELL_TIME_MULTIPLIER         103
+<<<<<<< HEAD
 #define QWLAN_HAL_CFG_RA_FILTER_ENABLE                  104
 #define QWLAN_HAL_CFG_RA_RATE_LIMIT_INTERVAL            105
 #define QWLAN_HAL_CFG_MAX_PARAMS                        106
+=======
+#define QWLAN_HAL_CFG_MAX_PARAMS                        104
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
 
 

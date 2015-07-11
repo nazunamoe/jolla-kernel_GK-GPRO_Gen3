@@ -254,6 +254,7 @@ void hdd_mon_tx_mgmt_pkt(hdd_adapter_t* pAdapter);
   ===========================================================================*/
 void hdd_mon_tx_work_queue(struct work_struct *work);
 
+<<<<<<< HEAD
 /**============================================================================
   @brief hdd_tx_rx_pkt_cnt_stat_timer_handler() -
                     Timer handler to check enable/disable split scan
@@ -262,4 +263,6 @@ void hdd_mon_tx_work_queue(struct work_struct *work);
   ===========================================================================*/
 void hdd_tx_rx_pkt_cnt_stat_timer_handler( void *pAdapter);
 
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 #endif    // end #if !defined( WLAN_HDD_TX_RX_H )

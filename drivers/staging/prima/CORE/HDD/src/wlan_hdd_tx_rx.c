@@ -621,7 +621,10 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
    ++pAdapter->hdd_stats.hddTxRxStats.txXmitQueued;
    ++pAdapter->hdd_stats.hddTxRxStats.txXmitQueuedAC[ac];
+<<<<<<< HEAD
    ++pAdapter->hdd_stats.hddTxRxStats.pkt_tx_count;
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
    //Make sure we have access to this access category
    if (likely(pAdapter->hddWmmStatus.wmmAcStatus[ac].wmmAcAccessAllowed) || 
@@ -672,12 +675,27 @@ int hdd_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
   ===========================================================================*/
 void hdd_tx_timeout(struct net_device *dev)
 {
+   hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
+   tHalHandle hHal = WLAN_HDD_GET_HAL_CTX(pAdapter);
+
    VOS_TRACE( VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
       "%s: Transmission timeout occurred", __func__);
    //Getting here implies we disabled the TX queues for too long. Queues are 
    //disabled either because of disassociation or low resource scenarios. In
    //case of disassociation it is ok to ignore this. But if associated, we have
    //do possible recovery here
+
+   //testing underlying data path stall
+   //FTM mode, data path is not initiated
+   if (VOS_FTM_MODE == hdd_get_conparam())
+   {
+      VOS_TRACE( VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+         "%s: FTM mode, how initiated TX?", __func__);
+   }
+   else
+   {
+      sme_transportDebug(hHal, 0, 1);
+   }
 } 
 
 
@@ -1339,8 +1357,7 @@ VOS_STATUS hdd_rx_packet_cbk( v_VOID_t *vosContext,
    pAdapter = pHddCtx->sta_to_adapter[staId];
    if( NULL == pAdapter )
    {
-      VOS_TRACE( VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,"%s: pAdapter is Null for staId %u",
-                 __func__, staId);
+      VOS_ASSERT(0);
       return VOS_STATUS_E_FAILURE;
    }
 
@@ -1398,8 +1415,12 @@ VOS_STATUS hdd_rx_packet_cbk( v_VOID_t *vosContext,
                       "rx extract mac:" MAC_ADDRESS_STR,
                       MAC_ADDR_ARRAY(mac) );
             curr_peer = wlan_hdd_tdls_find_peer(pAdapter, mac);
+<<<<<<< HEAD
             if ((NULL != curr_peer) && (eTDLS_LINK_CONNECTED == curr_peer->link_status)
                  && (TRUE == pRxMetaInfo->isStaTdls))
+=======
+            if ((NULL != curr_peer) && (eTDLS_LINK_CONNECTED == curr_peer->link_status))
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
             {
                 wlan_hdd_tdls_increment_pkt_count(pAdapter, mac, 0);
                 VOS_TRACE( VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO,"rssi is %d", pRxMetaInfo->rssiAvg);
@@ -1420,14 +1441,13 @@ VOS_STATUS hdd_rx_packet_cbk( v_VOID_t *vosContext,
       pAdapter->stats.rx_bytes += skb->len;
 #ifdef WLAN_OPEN_SOURCE
 #ifdef WLAN_FEATURE_HOLD_RX_WAKELOCK
-      wake_lock_timeout(&pHddCtx->rx_wake_lock, msecs_to_jiffies(HDD_WAKE_LOCK_DURATION));
+      wake_lock_timeout(&pHddCtx->rx_wake_lock, HDD_WAKE_LOCK_DURATION);
 #endif
 #endif
       rxstat = netif_rx_ni(skb);
       if (NET_RX_SUCCESS == rxstat)
       {
          ++pAdapter->hdd_stats.hddTxRxStats.rxDelivered;
-         ++pAdapter->hdd_stats.hddTxRxStats.pkt_rx_count;
       }
       else
       {
@@ -1450,6 +1470,7 @@ VOS_STATUS hdd_rx_packet_cbk( v_VOID_t *vosContext,
    return status;   
 }
 
+<<<<<<< HEAD
 /**===========================================================================
   @brief hdd_tx_rx_pkt_cnt_stat_timer_handler() -
                Enable/Disable split scan based on TX and RX traffic.
@@ -1566,3 +1587,5 @@ void hdd_tx_rx_pkt_cnt_stat_timer_handler( void *phddctx)
     }
     return;
 }
+=======
+>>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
