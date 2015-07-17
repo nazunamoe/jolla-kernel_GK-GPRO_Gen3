@@ -25,6 +25,8 @@
 
   \brief WLAN Host Device Driver implementation for TDLS
 
+  Copyright (c) 2013 Qualcomm Atheros, Inc. All Rights Reserved.
+  Qualcomm Atheros Confidential and Proprietary.
   ========================================================================*/
 
 #include <wlan_hdd_includes.h>
@@ -43,13 +45,10 @@ static struct mutex tdls_lock;
 static tANI_S32 wlan_hdd_get_tdls_discovery_peer_cnt(tdlsCtx_t *pHddTdlsCtx);
 static tANI_S32 wlan_hdd_tdls_peer_reset_discovery_processed(tdlsCtx_t *pHddTdlsCtx);
 static void wlan_hdd_tdls_timers_destroy(tdlsCtx_t *pHddTdlsCtx);
-<<<<<<< HEAD
 int wpa_tdls_is_allowed_force_peer(tdlsCtx_t *pHddTdlsCtx, u8 *mac);
 #ifdef CONFIG_TDLS_IMPLICIT
 static void wlan_hdd_tdls_pre_setup(struct work_struct *work);
 #endif
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
 #ifndef WLAN_FEATURE_TDLS_DEBUG
 #define TDLS_LOG_LEVEL VOS_TRACE_LEVEL_INFO
@@ -68,7 +67,6 @@ static u8 wlan_hdd_tdls_hash_key (u8 *mac)
     return key;
 }
 
-<<<<<<< HEAD
 #ifdef CONFIG_TDLS_IMPLICIT
 static void wlan_hdd_tdls_pre_setup_init_work(tdlsCtx_t * pHddTdlsCtx,
                                               hddTdlsPeer_t *curr_candidate)
@@ -84,8 +82,6 @@ static void wlan_hdd_tdls_pre_setup_init_work(tdlsCtx_t * pHddTdlsCtx,
 }
 #endif
 
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 static v_VOID_t wlan_hdd_tdls_start_peer_discover_timer(tdlsCtx_t *pHddTdlsCtx,
                                                         tANI_BOOLEAN mutexLock,
                                                         v_U32_t discoveryExpiry)
@@ -130,6 +126,7 @@ static v_VOID_t wlan_hdd_tdls_start_peer_discover_timer(tdlsCtx_t *pHddTdlsCtx,
     return;
 }
 
+#ifdef TDLS_USE_SEPARATE_DISCOVERY_TIMER
 static v_VOID_t wlan_hdd_tdls_discover_peer_cb( v_PVOID_t userData )
 {
     int i;
@@ -252,6 +249,7 @@ done:
         mutex_unlock(&tdls_lock);
     return;
 }
+#endif
 
 static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
 {
@@ -260,7 +258,6 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
     struct list_head *pos;
     hddTdlsPeer_t *curr_peer;
     tdlsCtx_t *pHddTdlsCtx;
-<<<<<<< HEAD
     hdd_context_t *pHddCtx;
 
     if (mutex_lock_interruptible(&tdls_lock))
@@ -285,22 +282,6 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
     pHddCtx = WLAN_HDD_GET_CTX( pHddTdlsCtx->pAdapter );
 
     if (NULL == pHddCtx)
-=======
-
-    if (mutex_lock_interruptible(&tdls_lock))
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
-    {
-        mutex_unlock(&tdls_lock);
-        return;
-    }
-    pHddTdlsCtx = (tdlsCtx_t *)userData;
-    if (NULL == pHddTdlsCtx)
-    {
-        mutex_unlock(&tdls_lock);
-        return;
-    }
-
-    if (NULL == pHddTdlsCtx->pAdapter)
     {
         mutex_unlock(&tdls_lock);
         return;
@@ -313,8 +294,8 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
             curr_peer = list_entry (pos, hddTdlsPeer_t, node);
 
             VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
-                       "hdd update cb " MAC_ADDRESS_STR " link_status %d"
-                       " tdls_support %d", MAC_ADDR_ARRAY(curr_peer->peerMac),
+                       "%s: " MAC_ADDRESS_STR " link_status %d"
+                       " tdls_support %d", __func__, MAC_ADDR_ARRAY(curr_peer->peerMac),
                        curr_peer->link_status, curr_peer->tdls_support);
             if (pHddCtx->cfg_ini->fTDLSExternalControl &&
                 (0 == wpa_tdls_is_allowed_force_peer (pHddTdlsCtx, curr_peer->peerMac))) {
@@ -323,10 +304,14 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
 
             if (eTDLS_CAP_SUPPORTED == curr_peer->tdls_support) {
                 VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
-                    "%s: (tx %d, rx %d, config %d) " MAC_ADDRESS_STR " (%d) ",
-                       __func__,  curr_peer->tx_pkt, curr_peer->rx_pkt,
+                    "tx %d, rx %d (thr.pkt %d/idle %d), rssi %d (thr.trig %d/hys %d/tear %d)",
+                       curr_peer->tx_pkt, curr_peer->rx_pkt,
                         pHddTdlsCtx->threshold_config.tx_packet_n,
-                        MAC_ADDR_ARRAY(curr_peer->peerMac), curr_peer->link_status);
+                        pHddTdlsCtx->threshold_config.idle_packet_n,
+                        curr_peer->rssi,
+                        pHddTdlsCtx->threshold_config.rssi_trigger_threshold,
+                        pHddTdlsCtx->threshold_config.rssi_hysteresis,
+                        pHddTdlsCtx->threshold_config.rssi_teardown_threshold);
 
                 if ((eTDLS_LINK_IDLE == curr_peer->link_status) ||
                     (eTDLS_LINK_DISCOVERING == curr_peer->link_status)){
@@ -338,7 +323,7 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
 
                             VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL, "Tput trigger TDLS pre-setup");
 #ifdef CONFIG_TDLS_IMPLICIT
-                            wlan_hdd_tdls_pre_setup(pHddTdlsCtx, curr_peer);
+                            wlan_hdd_tdls_pre_setup_init_work(pHddTdlsCtx, curr_peer);
 #endif
                         }
                         else
@@ -349,7 +334,8 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
                         }
                         goto next_peer;
                     }
-                } else {
+                }
+                else  if (eTDLS_LINK_CONNECTED == curr_peer->link_status) {
                     if ((tANI_S32)curr_peer->rssi <
                         (tANI_S32)pHddTdlsCtx->threshold_config.rssi_teardown_threshold) {
 
@@ -413,7 +399,9 @@ static v_VOID_t wlan_hdd_tdls_update_peer_cb( v_PVOID_t userData )
                         if (curr_peer->discovery_attempt++ <
                                  pHddTdlsCtx->threshold_config.discovery_tries_n) {
                             VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL, "TDLS UNKNOWN discover ");
-                            wlan_hdd_tdls_pre_setup(pHddTdlsCtx, curr_peer);
+#ifdef CONFIG_TDLS_IMPLICIT
+                            wlan_hdd_tdls_pre_setup_init_work(pHddTdlsCtx, curr_peer);
+#endif
                         }
                         else
                         {
@@ -440,7 +428,6 @@ static v_VOID_t wlan_hdd_tdls_idle_cb( v_PVOID_t userData )
 {
 #ifdef CONFIG_TDLS_IMPLICIT
     hddTdlsPeer_t *curr_peer = (hddTdlsPeer_t *)userData;
-<<<<<<< HEAD
 
     if (NULL == curr_peer)
     {
@@ -456,13 +443,6 @@ static v_VOID_t wlan_hdd_tdls_idle_cb( v_PVOID_t userData )
               curr_peer->rx_pkt,
               curr_peer->pHddTdlsCtx->threshold_config.idle_packet_n);
 
-=======
-
-    VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
-               "%s: Tx/Rx Idle " MAC_ADDRESS_STR " trigger teardown",
-               __func__,
-               MAC_ADDR_ARRAY(curr_peer->peerMac));
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     if (mutex_lock_interruptible(&tdls_lock))
     {
        VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
@@ -470,7 +450,6 @@ static v_VOID_t wlan_hdd_tdls_idle_cb( v_PVOID_t userData )
        return;
     }
 
-<<<<<<< HEAD
     /* Check tx/rx statistics on this tdls link for recent activities and
      * then decide whether to tear down the link or keep it.
      */
@@ -492,11 +471,6 @@ static v_VOID_t wlan_hdd_tdls_idle_cb( v_PVOID_t userData )
                                       curr_peer,
                                       eSIR_MAC_TDLS_TEARDOWN_UNSPEC_REASON);
     }
-=======
-    wlan_hdd_tdls_indicate_teardown(curr_peer->pHddTdlsCtx->pAdapter,
-                                    curr_peer,
-                                    eSIR_MAC_TDLS_TEARDOWN_UNSPEC_REASON);
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     mutex_unlock(&tdls_lock);
 #endif
 }
@@ -547,6 +521,23 @@ static v_VOID_t wlan_hdd_tdls_discovery_timeout_peer_cb(v_PVOID_t userData)
     return;
 }
 
+static v_VOID_t wlan_hdd_tdls_initiator_wait_cb( v_PVOID_t userData )
+{
+    hddTdlsPeer_t *curr_peer = (hddTdlsPeer_t *)userData;
+    tdlsCtx_t   *pHddTdlsCtx;
+
+    if ( NULL == curr_peer )
+        return;
+
+    pHddTdlsCtx = curr_peer->pHddTdlsCtx;
+
+    if ( NULL == pHddTdlsCtx )
+        return;
+
+    WLANTL_ResumeDataTx( (WLAN_HDD_GET_CTX(pHddTdlsCtx->pAdapter))->pvosContext,
+                           (v_U8_t *)&curr_peer->staId);
+}
+
 static void wlan_hdd_tdls_free_list(tdlsCtx_t *pHddTdlsCtx)
 {
     int i;
@@ -586,7 +577,6 @@ int wlan_hdd_tdls_init(hdd_adapter_t *pAdapter)
         sme_IsFeatureSupportedByFW(TDLS));
         return 0;
     }
-<<<<<<< HEAD
     /* TDLS is supported only in STA / P2P Client modes,
      * hence the check for TDLS support in a specific Device mode.
      * Do not return a failure rather do not continue further
@@ -633,24 +623,19 @@ int wlan_hdd_tdls_init(hdd_adapter_t *pAdapter)
                 VOS_TIMER_TYPE_SW,
                 wlan_hdd_tdls_discovery_timeout_peer_cb,
                 pHddTdlsCtx);
-=======
 
-    pHddTdlsCtx = vos_mem_malloc(sizeof(tdlsCtx_t));
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
-
-    if (NULL == pHddTdlsCtx) {
-        hddLog(VOS_TRACE_LEVEL_ERROR, "%s malloc failed!", __func__);
-        pAdapter->sessionCtx.station.pHddTdlsCtx = NULL;
-        return -1;
+        pAdapter->sessionCtx.station.pHddTdlsCtx = pHddTdlsCtx;
     }
 
-    pAdapter->sessionCtx.station.pHddTdlsCtx = pHddTdlsCtx;
+    pHddTdlsCtx = pAdapter->sessionCtx.station.pHddTdlsCtx;
 
     /* initialize TDLS global context */
     pHddCtx->connected_peer_count = 0;
     sme_SetTdlsPowerSaveProhibited(WLAN_HDD_GET_HAL_CTX(pAdapter), 0);
 
     pHddCtx->tdls_scan_ctxt.magic = 0;
+    pHddCtx->tdls_scan_ctxt.attempt = 0;
+    pHddCtx->tdls_scan_ctxt.reject = 0;
     pHddCtx->tdls_scan_ctxt.scan_request = NULL;
 
     for (staIdx = 0; staIdx < HDD_MAX_NUM_TDLS_STA; staIdx++)
@@ -661,9 +646,6 @@ int wlan_hdd_tdls_init(hdd_adapter_t *pAdapter)
                                             sizeof(v_MACADDR_t)) ;
     }
 
-    /* initialize TDLS pAdater context */
-    vos_mem_zero(pHddTdlsCtx, sizeof(tdlsCtx_t));
-
     pHddTdlsCtx->pAdapter = pAdapter;
 
     for (i = 0; i < 256; i++)
@@ -671,19 +653,8 @@ int wlan_hdd_tdls_init(hdd_adapter_t *pAdapter)
         INIT_LIST_HEAD(&pHddTdlsCtx->peer_list[i]);
     }
 
-    vos_timer_init(&pHddTdlsCtx->peerDiscoverTimer,
-            VOS_TIMER_TYPE_SW,
-            wlan_hdd_tdls_discover_peer_cb,
-            pHddTdlsCtx);
-
-    vos_timer_init(&pHddTdlsCtx->peerUpdateTimer,
-            VOS_TIMER_TYPE_SW,
-            wlan_hdd_tdls_update_peer_cb,
-            pHddTdlsCtx);
-    vos_timer_init(&pHddTdlsCtx->peerDiscoveryTimeoutTimer,
-            VOS_TIMER_TYPE_SW,
-            wlan_hdd_tdls_discovery_timeout_peer_cb,
-            pHddTdlsCtx);
+    pHddTdlsCtx->curr_candidate = NULL;
+    pHddTdlsCtx->magic = 0;
 
     /* remember configuration even if it is not used right now. it could be used later */
     pHddTdlsCtx->threshold_config.tx_period_t = pHddCtx->cfg_ini->fTDLSTxStatsPeriod;
@@ -756,13 +727,9 @@ static void wlan_hdd_tdls_timers_stop(tdlsCtx_t *pHddTdlsCtx)
     struct list_head *pos;
     hddTdlsPeer_t *curr_peer;
 
-<<<<<<< HEAD
 #ifdef TDLS_USE_SEPARATE_DISCOVERY_TIMER
     vos_timer_stop(&pHddTdlsCtx->peerDiscoverTimer);
 #endif
-=======
-    vos_timer_stop(&pHddTdlsCtx->peerDiscoverTimer);
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     vos_timer_stop(&pHddTdlsCtx->peerUpdateTimer);
     vos_timer_stop(&pHddTdlsCtx->peerDiscoveryTimeoutTimer);
 
@@ -778,6 +745,7 @@ static void wlan_hdd_tdls_timers_stop(tdlsCtx_t *pHddTdlsCtx)
                        __func__,
                        MAC_ADDR_ARRAY(curr_peer->peerMac));
             vos_timer_stop ( &curr_peer->peerIdleTimer );
+            vos_timer_stop( &curr_peer->initiatorWaitTimeoutTimer );
         }
     }
 }
@@ -790,12 +758,10 @@ static void wlan_hdd_tdls_timers_destroy(tdlsCtx_t *pHddTdlsCtx)
     struct list_head *pos;
     hddTdlsPeer_t *curr_peer;
 
-<<<<<<< HEAD
 #ifdef TDLS_USE_SEPARATE_DISCOVERY_TIMER
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     vos_timer_stop(&pHddTdlsCtx->peerDiscoverTimer);
     vos_timer_destroy(&pHddTdlsCtx->peerDiscoverTimer);
+#endif
     vos_timer_stop(&pHddTdlsCtx->peerUpdateTimer);
     vos_timer_destroy(&pHddTdlsCtx->peerUpdateTimer);
     vos_timer_stop(&pHddTdlsCtx->peerDiscoveryTimeoutTimer);
@@ -814,6 +780,8 @@ static void wlan_hdd_tdls_timers_destroy(tdlsCtx_t *pHddTdlsCtx)
                        MAC_ADDR_ARRAY(curr_peer->peerMac));
             vos_timer_stop ( &curr_peer->peerIdleTimer );
             vos_timer_destroy ( &curr_peer->peerIdleTimer );
+            vos_timer_stop(&curr_peer->initiatorWaitTimeoutTimer);
+            vos_timer_destroy(&curr_peer->initiatorWaitTimeoutTimer);
         }
     }
 }
@@ -869,6 +837,11 @@ hddTdlsPeer_t *wlan_hdd_tdls_get_peer(hdd_adapter_t *pAdapter, u8 *mac)
     vos_timer_init(&peer->peerIdleTimer,
                     VOS_TIMER_TYPE_SW,
                     wlan_hdd_tdls_idle_cb,
+                    peer);
+
+    vos_timer_init(&peer->initiatorWaitTimeoutTimer,
+                    VOS_TIMER_TYPE_SW,
+                    wlan_hdd_tdls_initiator_wait_cb,
                     peer);
 
     list_add_tail(&peer->node, head);
@@ -958,7 +931,7 @@ int wlan_hdd_tdls_recv_discovery_resp(hdd_adapter_t *pAdapter, u8 *mac)
         }
         else
         {
-            VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL, 
+            VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
             "Rssi Threshold not met: "MAC_ADDRESS_STR" rssi = %d threshold = %d ",
             MAC_ADDR_ARRAY(curr_peer->peerMac), curr_peer->rssi,
             pHddTdlsCtx->threshold_config.rssi_trigger_threshold);
@@ -1360,7 +1333,6 @@ hddTdlsPeer_t *wlan_hdd_tdls_find_peer(hdd_adapter_t *pAdapter, u8 *mac)
             return curr_peer;
         }
     }
-<<<<<<< HEAD
 
     mutex_unlock(&tdls_lock);
     return NULL;
@@ -1390,12 +1362,8 @@ hddTdlsPeer_t *wlan_hdd_tdls_find_all_peer(hdd_context_t *pHddCtx, u8 *mac)
         pAdapterNode = pNext;
     }
     return curr_peer;
-=======
-
-    mutex_unlock(&tdls_lock);
-    return NULL;
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 }
+
 
 int wlan_hdd_tdls_reset_peer(hdd_adapter_t *pAdapter, u8 *mac)
 {
@@ -1655,10 +1623,10 @@ void wlan_hdd_tdls_check_bmps(hdd_adapter_t *pAdapter)
 {
     hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
     tdlsCtx_t *pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
+    hddTdlsPeer_t *curr_peer;
 
     if ((NULL == pHddCtx) || (NULL == pHddTdlsCtx)) return;
 
-<<<<<<< HEAD
     curr_peer = wlan_hdd_tdls_is_progress(pHddCtx, NULL, 0, TRUE);
     if (NULL != curr_peer)
     {
@@ -1668,8 +1636,6 @@ void wlan_hdd_tdls_check_bmps(hdd_adapter_t *pAdapter)
         return;
     }
 
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     if ((TDLS_CTX_MAGIC != pHddCtx->tdls_scan_ctxt.magic) &&
         (0 == pHddCtx->connected_peer_count) &&
         (0 == pHddTdlsCtx->discovery_sent_cnt))
@@ -1705,16 +1671,12 @@ u8 wlan_hdd_tdls_is_peer_progress(hdd_adapter_t *pAdapter, u8 *mac)
     return (eTDLS_LINK_CONNECTING == curr_peer->link_status);
 }
 
-/* return TRUE if TDLS is ongoing
+/* return pointer to hddTdlsPeer_t if TDLS is ongoing. Otherwise return NULL.
  * mac - if NULL check for all the peer list, otherwise, skip this mac when skip_self is TRUE
  * skip_self - if TRUE, skip this mac. otherwise, check all the peer list. if
    mac is NULL, this argument is ignored, and check for all the peer list.
  */
-<<<<<<< HEAD
 static hddTdlsPeer_t *wlan_hdd_tdls_find_progress_peer(hdd_adapter_t *pAdapter, u8 *mac, u8 skip_self, tANI_BOOLEAN mutexLock)
-=======
-u8 wlan_hdd_tdls_is_progress(hdd_adapter_t *pAdapter, u8 *mac, u8 skip_self)
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 {
     int i;
     struct list_head *head;
@@ -1722,7 +1684,6 @@ u8 wlan_hdd_tdls_is_progress(hdd_adapter_t *pAdapter, u8 *mac, u8 skip_self)
     struct list_head *pos;
     tdlsCtx_t *pHddTdlsCtx;
 
-<<<<<<< HEAD
     if (mutexLock)
     {
         if (mutex_lock_interruptible(&tdls_lock))
@@ -1731,25 +1692,13 @@ u8 wlan_hdd_tdls_is_progress(hdd_adapter_t *pAdapter, u8 *mac, u8 skip_self)
                  "%s: unable to lock list", __func__);
            return NULL;
         }
-=======
-    if (mutex_lock_interruptible(&tdls_lock))
-    {
-       VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
-                 "%s: unable to lock list", __func__);
-       return FALSE;
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     }
     pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
     if (NULL == pHddTdlsCtx)
     {
-<<<<<<< HEAD
         if (mutexLock)
             mutex_unlock(&tdls_lock);
         return NULL;
-=======
-        mutex_unlock(&tdls_lock);
-        return FALSE;
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     }
 
     for (i = 0; i < 256; i++) {
@@ -1766,19 +1715,13 @@ u8 wlan_hdd_tdls_is_progress(hdd_adapter_t *pAdapter, u8 *mac, u8 skip_self)
                   VOS_TRACE(VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
                             "%s:" MAC_ADDRESS_STR " eTDLS_LINK_CONNECTING",
                             __func__, MAC_ADDR_ARRAY(curr_peer->peerMac));
-<<<<<<< HEAD
                   if (mutexLock)
                       mutex_unlock(&tdls_lock);
                   return curr_peer;
-=======
-                  mutex_unlock(&tdls_lock);
-                  return TRUE;
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
                 }
             }
         }
     }
-<<<<<<< HEAD
 
     if (mutexLock)
         mutex_unlock(&tdls_lock);
@@ -1809,11 +1752,6 @@ hddTdlsPeer_t *wlan_hdd_tdls_is_progress(hdd_context_t *pHddCtx, u8 *mac, u8 ski
         pAdapterNode = pNext;
     }
     return NULL;
-=======
-
-    mutex_unlock(&tdls_lock);
-    return FALSE;
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 }
 
 static void wlan_hdd_tdls_implicit_disable(tdlsCtx_t *pHddTdlsCtx)
@@ -1875,18 +1813,14 @@ void wlan_hdd_tdls_set_mode(hdd_context_t *pHddCtx,
     while ( NULL != pAdapterNode && VOS_STATUS_SUCCESS == status )
     {
        pAdapter = pAdapterNode->pAdapter;
-       if ((WLAN_HDD_INFRA_STATION == pAdapter->device_mode) ||
-           (WLAN_HDD_P2P_CLIENT == pAdapter->device_mode))
+       pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
+       if (NULL != pHddTdlsCtx)
        {
-           pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
-           if (NULL != pHddTdlsCtx)
-           {
-               if(eTDLS_SUPPORT_ENABLED == tdls_mode)
-                   wlan_hdd_tdls_implicit_enable(pHddTdlsCtx);
-               else if((eTDLS_SUPPORT_DISABLED == tdls_mode) ||
-                       (eTDLS_SUPPORT_EXPLICIT_TRIGGER_ONLY == tdls_mode))
-                   wlan_hdd_tdls_implicit_disable(pHddTdlsCtx);
-           }
+           if(eTDLS_SUPPORT_ENABLED == tdls_mode)
+               wlan_hdd_tdls_implicit_enable(pHddTdlsCtx);
+           else if((eTDLS_SUPPORT_DISABLED == tdls_mode) ||
+                   (eTDLS_SUPPORT_EXPLICIT_TRIGGER_ONLY == tdls_mode))
+               wlan_hdd_tdls_implicit_disable(pHddTdlsCtx);
        }
        status = hdd_get_next_adapter ( pHddCtx, pAdapterNode, &pNext );
        pAdapterNode = pNext;
@@ -1904,10 +1838,30 @@ void wlan_hdd_tdls_set_mode(hdd_context_t *pHddCtx,
     mutex_unlock(&tdls_lock);
 }
 
-void wlan_hdd_tdls_pre_setup(tdlsCtx_t *pHddTdlsCtx,
-                             hddTdlsPeer_t *curr_peer)
+static void wlan_hdd_tdls_pre_setup(struct work_struct *work)
 {
-    hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pHddTdlsCtx->pAdapter);
+    tdlsCtx_t *pHddTdlsCtx =
+       container_of(work, tdlsCtx_t, implicit_setup);
+    hdd_context_t *pHddCtx;
+    hddTdlsPeer_t *curr_peer;
+    hddTdlsPeer_t *temp_peer;
+    int status;
+
+    if (NULL == pHddTdlsCtx)
+        return;
+
+    if (unlikely(TDLS_CTX_MAGIC != pHddTdlsCtx->magic))
+        return;
+
+    pHddCtx = WLAN_HDD_GET_CTX(pHddTdlsCtx->pAdapter);
+
+    if (NULL == pHddCtx)
+        return;
+
+    curr_peer = pHddTdlsCtx->curr_candidate;
+
+    if (NULL == curr_peer)
+        return;
 
     if (TRUE == sme_IsPmcBmps(WLAN_HDD_GET_HAL_CTX(pHddTdlsCtx->pAdapter)))
     {
@@ -1915,7 +1869,6 @@ void wlan_hdd_tdls_pre_setup(tdlsCtx_t *pHddTdlsCtx,
         hdd_disable_bmps_imps(pHddCtx, WLAN_HDD_INFRA_STATION);
     }
 
-<<<<<<< HEAD
     temp_peer = wlan_hdd_tdls_is_progress(pHddCtx, NULL, 0, FALSE);
     if (NULL != temp_peer)
     {
@@ -1924,16 +1877,22 @@ void wlan_hdd_tdls_pre_setup(tdlsCtx_t *pHddTdlsCtx,
         goto done;
     }
 
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     if (eTDLS_CAP_UNKNOWN != curr_peer->tdls_support)
         curr_peer->link_status = eTDLS_LINK_DISCOVERING;
 
-    sme_SendTdlsMgmtFrame(WLAN_HDD_GET_HAL_CTX(pHddTdlsCtx->pAdapter),
-                          pHddTdlsCtx->pAdapter->sessionId,
-                          curr_peer->peerMac,
-                          WLAN_TDLS_DISCOVERY_REQUEST,
-                          1, 0, NULL, 0, 0);
+    status = wlan_hdd_cfg80211_send_tdls_discover_req(pHddTdlsCtx->pAdapter->wdev.wiphy,
+                                            pHddTdlsCtx->pAdapter->dev,
+                                            curr_peer->peerMac);
+
+    if (0 != status)
+    {
+        VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL, "%s: " MAC_ADDRESS_STR " discovery could not sent\n",
+            __func__, MAC_ADDR_ARRAY(curr_peer->peerMac));
+        if (eTDLS_CAP_UNKNOWN != curr_peer->tdls_support)
+            curr_peer->link_status = eTDLS_LINK_IDLE;
+        goto done;
+    }
+
     pHddTdlsCtx->discovery_sent_cnt++;
     wlan_hdd_tdls_check_power_save_prohibited(pHddTdlsCtx->pAdapter);
     VOS_TRACE( VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL, "%s: discovery count %lu timeout %lu msec",
@@ -1944,6 +1903,9 @@ void wlan_hdd_tdls_pre_setup(tdlsCtx_t *pHddTdlsCtx,
                                 &pHddTdlsCtx->peerDiscoveryTimeoutTimer,
                                 pHddTdlsCtx->threshold_config.tx_period_t - TDLS_DISCOVERY_TIMEOUT_BEFORE_UPDATE);
 
+done:
+    pHddTdlsCtx->curr_candidate = NULL;
+    pHddTdlsCtx->magic = 0;
     return;
 }
 
@@ -1960,14 +1922,10 @@ tANI_U32 wlan_hdd_tdls_discovery_sent_cnt(hdd_context_t *pHddCtx)
     {
         pAdapter = pAdapterNode->pAdapter;
 
-        if ((WLAN_HDD_INFRA_STATION == pAdapter->device_mode) ||
-            (WLAN_HDD_P2P_CLIENT == pAdapter->device_mode))
+        pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
+        if (NULL != pHddTdlsCtx)
         {
-            pHddTdlsCtx = WLAN_HDD_GET_TDLS_CTX_PTR(pAdapter);
-            if (NULL != pHddTdlsCtx)
-            {
-                count = count + pHddTdlsCtx->discovery_sent_cnt;
-            }
+            count = count + pHddTdlsCtx->discovery_sent_cnt;
         }
         status = hdd_get_next_adapter ( pHddCtx, pAdapterNode, &pNext );
         pAdapterNode = pNext;
@@ -1999,6 +1957,7 @@ void wlan_hdd_tdls_free_scan_request (tdls_scan_context_t *tdls_scan_ctx)
         return;
 
     tdls_scan_ctx->attempt = 0;
+    tdls_scan_ctx->reject = 0;
     tdls_scan_ctx->magic = 0;
     tdls_scan_ctx->scan_request = NULL;
         return;
@@ -2086,6 +2045,7 @@ int wlan_hdd_tdls_scan_callback (hdd_adapter_t *pAdapter,
 #endif
     hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
     u16 connectedTdlsPeers;
+    hddTdlsPeer_t *curr_peer;
     unsigned long delay;
 
     if (NULL == pHddCtx)
@@ -2095,16 +2055,22 @@ int wlan_hdd_tdls_scan_callback (hdd_adapter_t *pAdapter,
     if (eTDLS_SUPPORT_NOT_ENABLED == pHddCtx->tdls_mode)
         return 1;
 
-<<<<<<< HEAD
     curr_peer = wlan_hdd_tdls_is_progress(pHddCtx, NULL, 0, TRUE);
     if (NULL != curr_peer)
-=======
-    if (wlan_hdd_tdls_is_progress(pAdapter, NULL, 0))
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
     {
+        if (pHddCtx->tdls_scan_ctxt.reject++ >= TDLS_MAX_SCAN_REJECT)
+        {
+            pHddCtx->tdls_scan_ctxt.reject = 0;
+            VOS_TRACE(VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
+                    "%s: " MAC_ADDRESS_STR ". scan rejected %d. force it to idle",
+                    __func__, MAC_ADDR_ARRAY (curr_peer->peerMac), pHddCtx->tdls_scan_ctxt.reject);
+
+            wlan_hdd_tdls_set_peer_link_status (curr_peer, eTDLS_LINK_IDLE);
+            return 1;
+        }
         VOS_TRACE(VOS_MODULE_ID_HDD, TDLS_LOG_LEVEL,
-                "%s: tdls in progress. scan rejected",
-                __func__);
+                "%s: tdls in progress. scan rejected %d",
+                __func__, pHddCtx->tdls_scan_ctxt.reject);
         return -EBUSY;
     }
 
@@ -2155,8 +2121,9 @@ int wlan_hdd_tdls_scan_callback (hdd_adapter_t *pAdapter,
                                    ("%s: indicate TDLS teadown (staId %d)"), __func__, pHddCtx->tdlsConnInfo[staIdx].staId) ;
 
 #ifdef CONFIG_TDLS_IMPLICIT
-                    curr_peer = wlan_hdd_tdls_find_peer(pAdapter,pHddCtx->tdlsConnInfo[staIdx].peerMac.bytes);
-                    wlan_hdd_tdls_indicate_teardown(pAdapter, curr_peer, eSIR_MAC_TDLS_TEARDOWN_UNSPEC_REASON);
+                    curr_peer = wlan_hdd_tdls_find_all_peer(pHddCtx, pHddCtx->tdlsConnInfo[staIdx].peerMac.bytes);
+                    if(curr_peer)
+                        wlan_hdd_tdls_indicate_teardown(curr_peer->pHddTdlsCtx->pAdapter, curr_peer, eSIR_MAC_TDLS_TEARDOWN_UNSPEC_REASON);
 #endif
                 }
             }

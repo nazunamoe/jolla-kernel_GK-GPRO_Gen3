@@ -58,19 +58,11 @@ BRIEF DESCRIPTION:
 
 #define QWLAN_VERSION_MAJOR            3
 #define QWLAN_VERSION_MINOR            2
-<<<<<<< HEAD
 #define QWLAN_VERSION_PATCH            3
 #define QWLAN_VERSION_EXTRA            ""
 #define QWLAN_VERSION_BUILD            23
 
 #define QWLAN_VERSIONSTR              "3.2.3.23"
-=======
-#define QWLAN_VERSION_PATCH            2
-#define QWLAN_VERSION_EXTRA            ""
-#define QWLAN_VERSION_BUILD            17
-
-#define QWLAN_VERSIONSTR               "3.2.2.17"
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
 #endif /* QWLAN_VERSION_H */
 

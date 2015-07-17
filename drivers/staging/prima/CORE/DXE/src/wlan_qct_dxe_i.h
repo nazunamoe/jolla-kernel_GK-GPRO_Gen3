@@ -39,6 +39,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 #ifndef WLAN_QCT_DXE_I_H
 #define WLAN_QCT_DXE_I_H
 
@@ -49,9 +50,9 @@
   @brief 
                
    This file contains the external API exposed by the wlan data transfer abstraction layer module.
-   Copyright (c) 2011 QUALCOMM Incorporated.
+   Copyright (c) 2011 Qualcomm Technologies, Inc.
    All Rights Reserved.
-   Qualcomm Confidential and Proprietary
+   Qualcomm Technologies Confidential and Proprietary
 ========================================================================*/
 
 /*===========================================================================
@@ -642,10 +643,7 @@ typedef struct
    wpt_packet                     *freeRXPacket;
    wpt_boolean                     rxPalPacketUnavailable;
    wpt_boolean                     driverReloadInProcessing;
-<<<<<<< HEAD
    wpt_boolean                     smsmToggled;
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 } WLANDXE_CtrlBlkType;
 
 /*==========================================================================

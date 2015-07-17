@@ -591,6 +591,11 @@ typedef enum
 #define CFG_RETRY_LIMIT_TWO_MAX        ( 15 )
 #define CFG_RETRY_LIMIT_TWO_DEFAULT    ( 15 )
 
+#define CFG_DISABLE_AGG_WITH_BTC_NAME       "gDisableAggWithBTC"
+#define CFG_DISABLE_AGG_WITH_BTC_MIN        ( 0 )
+#define CFG_DISABLE_AGG_WITH_BTC_MAX        ( 1 )
+#define CFG_DISABLE_AGG_WITH_BTC_DEFAULT    ( 1 )
+
 #ifdef WLAN_AP_STA_CONCURRENCY
 
 #define CFG_PASSIVE_MAX_CHANNEL_TIME_CONC_NAME      "gPassiveMaxChannelTimeConc"
@@ -618,10 +623,15 @@ typedef enum
 #define CFG_REST_TIME_CONC_MAX                      ( 10000 )
 #define CFG_REST_TIME_CONC_DEFAULT                  ( 100 )
 
-#define CFG_NUM_CHAN_COMBINED_CONC_NAME             "gNumChanCombinedConc"
-#define CFG_NUM_CHAN_COMBINED_CONC_MIN              ( 1 )
-#define CFG_NUM_CHAN_COMBINED_CONC_MAX              ( 255 )
-#define CFG_NUM_CHAN_COMBINED_CONC_DEFAULT          ( 1 )
+#define CFG_NUM_STA_CHAN_COMBINED_CONC_NAME             "gNumStaChanCombinedConc"
+#define CFG_NUM_STA_CHAN_COMBINED_CONC_MIN              ( 1 )
+#define CFG_NUM_STA_CHAN_COMBINED_CONC_MAX              ( 255 )
+#define CFG_NUM_STA_CHAN_COMBINED_CONC_DEFAULT          ( 3 )
+
+#define CFG_NUM_P2P_CHAN_COMBINED_CONC_NAME             "gNumP2PChanCombinedConc"
+#define CFG_NUM_P2P_CHAN_COMBINED_CONC_MIN              ( 1 )
+#define CFG_NUM_P2P_CHAN_COMBINED_CONC_MAX              ( 255 )
+#define CFG_NUM_P2P_CHAN_COMBINED_CONC_DEFAULT          ( 1 )
 
 #endif
 
@@ -816,6 +826,21 @@ typedef enum
 #define CFG_IMMEDIATE_ROAM_RSSI_DIFF_MAX                    (125)
 #define CFG_IMMEDIATE_ROAM_RSSI_DIFF_DEFAULT                (3)
 
+/*This parameter is used to set Wireless Extended Security Mode.*/
+#define CFG_ENABLE_WES_MODE_NAME                            "gWESModeEnabled"
+#define CFG_ENABLE_WES_MODE_NAME_MIN                        (0)
+#define CFG_ENABLE_WES_MODE_NAME_MAX                        (1)
+#define CFG_ENABLE_WES_MODE_NAME_DEFAULT                    (0)
+
+#define CFG_ROAM_SCAN_N_PROBES                             "gRoamScanNProbes"
+#define CFG_ROAM_SCAN_N_PROBES_MIN                          (1)
+#define CFG_ROAM_SCAN_N_PROBES_MAX                          (10)
+#define CFG_ROAM_SCAN_N_PROBES_DEFAULT                      (2)
+
+#define CFG_ROAM_SCAN_HOME_AWAY_TIME                        "gRoamScanHomeAwayTime"
+#define CFG_ROAM_SCAN_HOME_AWAY_TIME_MIN                    (3)
+#define CFG_ROAM_SCAN_HOME_AWAY_TIME_MAX                    (300)
+#define CFG_ROAM_SCAN_HOME_AWAY_TIME_DEFAULT                (CFG_NEIGHBOR_SCAN_MAX_CHAN_TIME_DEFAULT)
 #endif /* (WLAN_FEATURE_VOWIFI_11R) || defined (FEATURE_WLAN_CCX) || defined(FEATURE_WLAN_LFR) */
 
 #ifdef FEATURE_WLAN_OKC
@@ -823,6 +848,13 @@ typedef enum
 #define CFG_OKC_FEATURE_ENABLED_MIN                        (0)
 #define CFG_OKC_FEATURE_ENABLED_MAX                        (1)
 #define CFG_OKC_FEATURE_ENABLED_DEFAULT                    (1)
+#endif
+
+#ifdef WLAN_FEATURE_ROAM_SCAN_OFFLOAD
+#define CFG_ROAM_SCAN_OFFLOAD_ENABLED                       "gRoamScanOffloadEnabled"
+#define CFG_ROAM_SCAN_OFFLOAD_ENABLED_MIN                   (0)
+#define CFG_ROAM_SCAN_OFFLOAD_ENABLED_MAX                   (1)
+#define CFG_ROAM_SCAN_OFFLOAD_ENABLED_DEFAULT               (1)
 #endif
 
 #define CFG_QOS_WMM_PKT_CLASSIFY_BASIS_NAME                "PktClassificationBasis" // DSCP or 802.1Q
@@ -1153,9 +1185,8 @@ typedef enum
 #define CFG_NEIGHBOR_SCAN_RESULTS_REFRESH_PERIOD_MIN          (1000)
 #define CFG_NEIGHBOR_SCAN_RESULTS_REFRESH_PERIOD_MAX          (60000)
 #define CFG_NEIGHBOR_SCAN_RESULTS_REFRESH_PERIOD_DEFAULT      (20000)
-
 #define CFG_EMPTY_SCAN_REFRESH_PERIOD_NAME         "gEmptyScanRefreshPeriod"
-#define CFG_EMPTY_SCAN_REFRESH_PERIOD_MIN          (0)
+#define CFG_EMPTY_SCAN_REFRESH_PERIOD_MIN          (1000)
 #define CFG_EMPTY_SCAN_REFRESH_PERIOD_MAX          (60000)
 #define CFG_EMPTY_SCAN_REFRESH_PERIOD_DEFAULT      (0)
 #endif /* WLAN_FEATURE_NEIGHBOR_ROAMING */
@@ -1215,6 +1246,12 @@ typedef enum
 #define CFG_ENABLE_HOST_ARPOFFLOAD_MAX          ( 1 )
 #define CFG_ENABLE_HOST_ARPOFFLOAD_DEFAULT      ( 0 )
 
+#define CFG_ENABLE_HOST_NSOFFLOAD_NAME         "hostNSOffload"
+#define CFG_ENABLE_HOST_NSOFFLOAD_MIN          ( 0 )
+#define CFG_ENABLE_HOST_NSOFFLOAD_MAX          ( 1 )
+#define CFG_ENABLE_HOST_NSOFFLOAD_DEFAULT      ( 0 )
+
+
 #define CFG_ENABLE_BTAMP_NAME                   "gEnableBtAmp"
 #define CFG_ENABLE_BTAMP_MIN                    ( 0 )
 #define CFG_ENABLE_BTAMP_MAX                    ( 1 )
@@ -1251,11 +1288,6 @@ typedef enum
 #define CFG_ENABLE_DFS_CHNL_SCAN_MIN               ( 0 )
 #define CFG_ENABLE_DFS_CHNL_SCAN_MAX               ( 1 )
 #define CFG_ENABLE_DFS_CHNL_SCAN_DEFAULT           ( 1 )
-
-#define CFG_ENABLE_IGNORE_CHAN165                   "gIgnore_Chan165"
-#define CFG_ENABLE_IGNORE_CHAN165_MIN               ( 0 )
-#define CFG_ENABLE_IGNORE_CHAN165_MAX               ( 1 )
-#define CFG_ENABLE_IGNORE_CHAN165_DEFAULT           ( 0 )
 
 typedef enum
 {
@@ -1310,19 +1342,10 @@ typedef enum
 #define CFG_P2P_DEVICE_ADDRESS_ADMINISTRATED_MAX                 ( 1 )
 #define CFG_P2P_DEVICE_ADDRESS_ADMINISTRATED_DEFAULT             ( 0 )
 
-<<<<<<< HEAD
 #define CFG_ENABLE_SSR                      "gEnableSSR"
 #define CFG_ENABLE_SSR_MIN                  ( 0 )
 #define CFG_ENABLE_SSR_MAX                  ( 1 )
 #define CFG_ENABLE_SSR_DEFAULT              ( 1 )
-=======
-#ifdef WLAN_FEATURE_PACKET_FILTERING
-#define CFG_MC_ADDR_LIST_FILTER_NAME               "isMcAddrListFilter"
-#define CFG_MC_ADDR_LIST_FILTER_MIN                ( 0 )
-#define CFG_MC_ADDR_LIST_FILTER_MAX                ( 1 )
-#define CFG_MC_ADDR_LIST_FILTER_DEFAULT            ( 0 )
-#endif
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 
 /*
  * VOS Trace Enable Control
@@ -1482,27 +1505,32 @@ typedef enum
  * Enable / Disable MCC feature
  * Default: Enable
  */
-#define CFG_ENABLE_MCC_ENABLED_NAME             "gEnableMCCMode"      
+#define CFG_ENABLE_MCC_ENABLED_NAME             "gEnableMCCMode"
 #define CFG_ENABLE_MCC_ENABLED_MIN              ( 0 )
 #define CFG_ENABLE_MCC_ENABLED_MAX              ( 1 )
-#define CFG_ENABLE_MCC_ENABLED_DEFAULT          ( 1 ) 
+#define CFG_ENABLE_MCC_ENABLED_DEFAULT          ( 1 )
 
 /*
  * Allow GO in MCC mode to accept different beacon interval than STA's.
  * Added for Wi-Fi Cert. 5.1.12
- * Default: Disable
- * If gAllowMCCGODiffBI = 1  // Set to 1 for WFA certification. GO Beacon interval is not changed. MCC GO 
-*                                             doesn't work well in optimized way. In worst scenario, it may invite STA 
-*                                            disconnection.
- * gAllowMCCGODiffBI = 2     //If set to 2 workaround 1 disassoc all the clients 
+ * Default: gAllowMCCGODiffBI = 2
+ * If gAllowMCCGODiffBI = 1  // Set to 1 for WFA certification. GO Beacon
+ *                              interval is not changed. MCC GO
+ *                              doesn't work well in optimized way.
+ *                              In worst scenario, it may invite STA
+ *                              disconnection.
+ * gAllowMCCGODiffBI = 2     //If set to 2 workaround 1 disassoc all the clients
  *                             and update beacon Interval
  * gAllowMCCGODiffBI = 3     //If set to 3 tear down the P2P link in auto/ 
  *                             Non-autonomous -GO case
+ * gAllowMCCGODiffBI = 4     //If set to 4 don't disconnect the P2P client
+ *                             in autonomous/Non-autonomous -GO case update
+ *                             the BI dynamically
  */
 #define CFG_ALLOW_MCC_GO_DIFF_BI_NAME           "gAllowMCCGODiffBI"
 #define CFG_ALLOW_MCC_GO_DIFF_BI_MIN            ( 0 )
-#define CFG_ALLOW_MCC_GO_DIFF_BI_MAX            ( 3 )
-#define CFG_ALLOW_MCC_GO_DIFF_BI_DEFAULT        ( 2 ) 
+#define CFG_ALLOW_MCC_GO_DIFF_BI_MAX            ( 4 )
+#define CFG_ALLOW_MCC_GO_DIFF_BI_DEFAULT        ( 4 )
 
 /*
  * Enable/Disable Thermal Mitigation feature
@@ -1691,7 +1719,6 @@ typedef enum
 #define CFG_DISABLE_LDPC_WITH_TXBF_AP             "gDisableLDPCWithTxbfAP"
 #define CFG_DISABLE_LDPC_WITH_TXBF_AP_MIN         ( 0 )
 #define CFG_DISABLE_LDPC_WITH_TXBF_AP_MAX         ( 1 )
-<<<<<<< HEAD
 #define CFG_DISABLE_LDPC_WITH_TXBF_AP_DEFAULT     ( 0 )
 #endif
 
@@ -1759,10 +1786,6 @@ typedef enum
 #define CFG_RA_RATE_LIMIT_INTERVAL_MIN          (0)
 #define CFG_RA_RATE_LIMIT_INTERVAL_MAX          (60)
 
-=======
-#define CFG_DISABLE_LDPC_WITH_TXBF_AP_DEFAULT     ( 1 )
-#endif
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 /*--------------------------------------------------------------------------- 
   Type declarations
   -------------------------------------------------------------------------*/ 
@@ -1920,14 +1943,17 @@ typedef struct
    v_U32_t        nActiveMinChnTimeConc;     //in units of milliseconds
    v_U32_t        nActiveMaxChnTimeConc;     //in units of milliseconds
    v_U32_t        nRestTimeConc;             //in units of milliseconds
-   v_U8_t         nNumChanCombinedConc;      //number of channels combined
-                                             //in each split scan operation
+   v_U8_t         nNumStaChanCombinedConc;   //number of channels combined for
+                                             //STA in each split scan operation
+   v_U8_t         nNumP2PChanCombinedConc;   //number of channels combined for
+                                             //P2P in each split scan operation
 #endif
 
    v_U8_t         nMaxPsPoll;
 
    v_U8_t         nRssiFilterPeriod;
    v_BOOL_t       fIgnoreDtim;
+   v_U8_t         fMaxLIModulatedDTIM;
 
    v_U8_t         nRxAnt;
    v_U8_t         fEnableFwHeartBeatMonitoring;
@@ -1960,11 +1986,11 @@ typedef struct
    v_BOOL_t                     isFastTransitionEnabled;
    v_U8_t                       RoamRssiDiff;
    v_U8_t                       nImmediateRoamRssiDiff;
+   v_BOOL_t                     isWESModeEnabled;
 #endif
 #ifdef FEATURE_WLAN_OKC
    v_BOOL_t                     isOkcIniFeatureEnabled;
 #endif
-<<<<<<< HEAD
 #ifdef WLAN_FEATURE_ROAM_SCAN_OFFLOAD
    v_BOOL_t                     isRoamOffloadScanEnabled;
 #endif
@@ -1974,8 +2000,6 @@ typedef struct
                                                //splitscan
    //Traffic monitor timer for split scan
    v_U32_t                     trafficMntrTmrForSplitScan;
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
    hdd_wmm_classification_t     PktClassificationBasis; // DSCP or 802.1Q
    v_BOOL_t                     bImplicitQosEnabled;
 
@@ -2023,6 +2047,7 @@ typedef struct
    v_BOOL_t                    bSingleTidRc;
    v_U8_t                      mcastBcastFilterSetting;
    v_BOOL_t                    fhostArpOffload;
+   v_BOOL_t                    fhostNSOffload;
    v_BOOL_t                    burstSizeDefinition;
    v_U8_t                      tsInfoAckPolicy;
    
@@ -2079,6 +2104,8 @@ typedef struct
 #if  defined (WLAN_FEATURE_VOWIFI_11R) || defined (FEATURE_WLAN_CCX) || defined(FEATURE_WLAN_LFR)
    v_BOOL_t                    nRoamPrefer5GHz;
    v_BOOL_t                    nRoamIntraBand;
+   v_U8_t                      nProbes;
+   v_U16_t                     nRoamScanHomeAwayTime;
 #endif
    v_S31_t                     linkSpeedRssiMid;
    v_S31_t                     linkSpeedRssiLow;
@@ -2100,7 +2127,6 @@ typedef struct
    v_BOOL_t                    ignoreDynamicDtimInP2pMode;
    v_U16_t                     configMccParam;
    v_U32_t                     numBuffAdvert;
-   v_U8_t                      ignore_chan165;
    v_BOOL_t                    enableRxSTBC;
 #ifdef FEATURE_WLAN_TDLS       
    v_BOOL_t                    fEnableTDLSSupport;
@@ -2132,7 +2158,6 @@ typedef struct
    v_U8_t                      retryLimitZero;
    v_U8_t                      retryLimitOne;
    v_U8_t                      retryLimitTwo;
-<<<<<<< HEAD
    v_U8_t                      disableAggWithBtc;
    char                        listOfNonDfsCountryCode[128];
    v_BOOL_t                    enableSSR;
@@ -2142,8 +2167,6 @@ typedef struct
    v_U32_t                     trafficIdleTimeout;
    v_BOOL_t                    cfgRAFilterEnable;
    v_U16_t                     cfgRARateLimitInterval;
-=======
->>>>>>> 2ce0047... prima: Get back gproj's original driver (v3.2.2.17)
 } hdd_config_t;
 /*--------------------------------------------------------------------------- 
   Function declarations and documenation
