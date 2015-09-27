@@ -1,7 +1,7 @@
 /*
  *
  * Automatically generated file; DO NOT EDIT.
- * Linux/arm 3.4.108-jolla-kernel_Gen3-v3.2 Kernel Configuration
+ * Linux/arm 3.4.108-jolla-kernel_Gen3-v3.8 Kernel Configuration
  *
  */
 #define CONFIG_RING_BUFFER 1
@@ -652,6 +652,7 @@
 #define CONFIG_MOUSE_PS2_LOGIPS2PP 1
 #define CONFIG_VM_EVENT_COUNTERS 1
 #define CONFIG_CRYPTO_ECB 1
+#define CONFIG_TOUCHSCREEN_SCROFF_VOLCTR 1
 #define CONFIG_SND_DYNAMIC_MINORS 1
 #define CONFIG_NF_CONNTRACK_AMANDA 1
 #define CONFIG_DEBUG_FS 1
