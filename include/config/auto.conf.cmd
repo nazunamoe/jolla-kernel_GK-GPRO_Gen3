@@ -807,7 +807,7 @@ deps_config := \
 include/config/auto.conf: \
 	$(deps_config)
 
-ifneq "$(KERNELVERSION)" "3.4.108-jolla-kernel_Gen3-v3.8"
+ifneq "$(KERNELVERSION)" "3.4.109-jolla-kernel_Gen3-v4.0"
 include/config/auto.conf: FORCE
 endif
 ifneq "$(ARCH)" "arm"

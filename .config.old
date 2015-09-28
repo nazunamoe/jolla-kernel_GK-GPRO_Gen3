@@ -1,6 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
+<<<<<<< HEAD:.config.old
 # Linux/arm 3.4.108-jolla-kernel_Gen3-v3.8 Kernel Configuration
+=======
+# Linux/arm 3.4.109-jolla-kernel_Gen3-v4.1 Kernel Configuration
+>>>>>>> 7804cb7... jolla-kernel_Gen3-v4.1:arch/arm/configs/geeb_defconfig
 #
 CONFIG_ARM=y
 CONFIG_ARM_HAS_SG_CHAIN=y

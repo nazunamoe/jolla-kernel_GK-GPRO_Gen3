@@ -1,7 +1,7 @@
 /*
  *
  * Automatically generated file; DO NOT EDIT.
- * Linux/arm 3.4.108-jolla-kernel_Gen3-v3.8 Kernel Configuration
+ * Linux/arm 3.4.109-jolla-kernel_Gen3-v4.0 Kernel Configuration
  *
  */
 #define CONFIG_RING_BUFFER 1
