@@ -59,8 +59,8 @@ extern int tegra_input_boost (struct cpufreq_policy *policy,
  * lowering the frequency towards the ideal frequency is faster than below it.
  */
 
-#define DEFAULT_SUSPEND_IDEAL_FREQ 384000
-#define DEFAULT_AWAKE_IDEAL_FREQ 702000
+#define DEFAULT_SUSPEND_IDEAL_FREQ 162000
+#define DEFAULT_AWAKE_IDEAL_FREQ 1026000
 #define DEFAULT_RAMP_UP_STEP 216000
 #define DEFAULT_RAMP_DOWN_STEP 108000
 #define DEFAULT_MAX_CPU_LOAD 80
