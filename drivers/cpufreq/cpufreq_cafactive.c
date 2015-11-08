@@ -424,7 +424,7 @@ static void __cpufreq_cafactive_timer(unsigned long data, bool is_notif)
 	unsigned int loadadjfreq;
 	unsigned int index;
 	unsigned long flags;
-	struct cpufreq_govinfo int_info;
+
 	u64 max_fvtime;
 
 	if (!down_read_trylock(&pcpu->enable_sem))
@@ -445,11 +445,7 @@ static void __cpufreq_cafactive_timer(unsigned long data, bool is_notif)
 	do_div(cputime_speedadj, delta_time);
 	loadadjfreq = (unsigned int)cputime_speedadj * 100;
 
-	int_info.cpu = data;
-	int_info.load = loadadjfreq / pcpu->policy->max;
-	int_info.sampling_rate_us = tunables->timer_rate;
-	atomic_notifier_call_chain(&cpufreq_govinfo_notifier_list,
-					CPUFREQ_LOAD_CHANGE, &int_info);
+
 
 	spin_lock_irqsave(&pcpu->target_freq_lock, flags);
 	cpu_load = loadadjfreq / pcpu->policy->cur;
@@ -1598,3 +1594,4 @@ MODULE_AUTHOR("Mike Chan <mike@android.com>");
 MODULE_DESCRIPTION("'cpufreq_cafactive' - A cpufreq governor for "
 	"Latency sensitive workloads");
 MODULE_LICENSE("GPL");
+
