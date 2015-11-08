@@ -15,7 +15,6 @@
 #include <linux/slab.h>
 #include <linux/sched.h>
 #include <linux/sched/rt.h>
-#include <linux/task_work.h>
 
 #include "internals.h"
 
