@@ -18,17 +18,14 @@ obj-$(CONFIG_CPU_FREQ_GOV_SMARTASS2)	   += cpufreq_smartass2.o
 obj-$(CONFIG_CPU_FREQ_GOV_LAZY)          += cpufreq_lazy.o
 obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUGV2)  += cpufreq_abyssplugv2.o
 obj-$(CONFIG_CPU_FREQ_GOV_LIONHEART)    += cpufreq_lionheart.o
-<<<<<<< HEAD
 obj-$(CONFIG_CPU_FREQ_GOV_LULZACTIVE)   += cpufreq_lulzactive.o
 obj-$(CONFIG_CPU_FREQ_GOV_UBERDEMAND)   += cpufreq_uberdemand.o
 obj-$(CONFIG_CPU_FREQ_GOV_SLIM)         += cpufreq_slim.o
 obj-$(CONFIG_CPU_FREQ_GOV_PEGASUSQ)     += cpufreq_pegasusq.o
 obj-$(CONFIG_CPU_FREQ_GOV_DANCEDANCE)   += cpufreq_dancedance.o
-=======
 obj-$(CONFIG_CPU_FREQ_GOV_DANCEDANCE)	+= cpufreq_dancedance.o
 obj-$(CONFIG_CPU_FREQ_GOV_ADAPTIVE)	+= cpufreq_adaptive.o
 obj-$(CONFIG_CPU_FREQ_GOV_HYPER)	+= cpufreq_hyper.o
->>>>>>> 1822fa5... cpufreq: add Hyper
 
 # CPUfreq cross-arch helpers
 obj-$(CONFIG_CPU_FREQ_TABLE)		+= freq_table.o

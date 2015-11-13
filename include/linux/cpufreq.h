@@ -417,7 +417,6 @@ extern struct cpufreq_governor cpufreq_gov_pegasusq;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DANCEDANCE)
 extern struct cpufreq_governor cpufreq_gov_dancedance;
 #define CPUFREQ_DEFAULT_GOVERNOR  (&cpufreq_gov_dancedance)
-=======
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_intellidemand)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE)
 extern struct cpufreq_governor cpufreq_gov_intelliactive;
@@ -431,7 +430,6 @@ extern struct cpufreq_governor cpufreq_gov_adaptive;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_HYPER)
 extern struct cpufreq_governor cpufreq_gov_hyper;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_hyper)
->>>>>>> 1822fa5... cpufreq: add Hyper
 #endif
 
 
